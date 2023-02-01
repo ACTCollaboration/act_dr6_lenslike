@@ -61,6 +61,17 @@ likelihood:
     - False when combining with any primary CMB measurement
     - True when not combining with any primary CMB measurement
 
+### Recommended theory accuracy
+
+For CAMB calls, we recommend the following (or higher accuracy):
+- `lmax`: 4000
+- `lens_margin`:1250
+- `lens_potential_accuracy`: 4
+- `AccuracyBoost`:1
+- `lSampleBoost`:1
+- `lAccuracyBoost`:1
+- `halofit`:`mead2016`
+
 ## Planned updates
 
 - Test likelihood values
