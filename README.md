@@ -1,4 +1,4 @@
-# act_dr6_lenslike
+# ACT DR6 Lensing Likelihood
 
 Likelihood software for the ACT DR6 CMB lensing analysis.
 
