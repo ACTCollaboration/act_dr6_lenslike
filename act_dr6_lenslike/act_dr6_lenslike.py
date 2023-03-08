@@ -9,6 +9,17 @@ import os
 file_dir = os.path.abspath(os.path.dirname(__file__))
 data_dir = f"{file_dir}/data/v1.0/"
 
+variants =[x.strip() for x in  '''
+act_baseline,
+act_extended,
+actplanck_baseline,
+actplanck_extended,
+act_polonly,
+act_cibdeproj,
+act_cinpaint
+'''.strip().replace('\n','').split(',')]
+
+
 # ================
 # HELPER FUNCTIONS
 # ================
@@ -107,7 +118,23 @@ def get_camb_lens_obj(nz,kmax,zmax=None):
                                  "vars_pairs": ([["Weyl", "Weyl"]])}}
     return cobj
 
-    
+
+def parse_variant(variant):
+
+    variant = variant.lower().strip()
+    if variant not in variants: raise ValueError
+
+    v = None
+    if '_extended' in variant:
+        baseline = False
+    else:
+        baseline = True
+        if '_baseline' not in variant:
+            v = variant.split('_')[-1]
+
+    include_planck = True if 'actplanck' in variant else False
+    return v,baseline,include_planck
+
 
 # ==================            
 # Generic likelihood
@@ -128,7 +155,7 @@ chi_square = -2 lnlike
 
 def load_data(variant,lens_only=False,
               apply_hartlap=True,like_corrections=True,mock=False,
-              nsims_act=796,nsims_planck=400,trim_lmax=2998):
+              nsims_act=796,nsims_planck=400,trim_lmax=2998,scale_cov=None):
     """
     Given a data directory path, this function loads into a dictionary
     the data products necessary for evaluating the DR6 lensing likelihood.
@@ -148,28 +175,8 @@ def load_data(variant,lens_only=False,
     """
     # TODO: review defaults
 
-    variants =[x.strip() for x in  '''
-    act_baseline,
-    act_extended,
-    actplanck_baseline,
-    actplanck_extended,
-    act_polonly,
-    act_cibdeproj,
-    act_cinpaint
-    '''.strip().replace('\n','').split(',')]
 
-    variant = variant.lower().strip()
-    if variant not in variants: raise ValueError
-
-    v = None
-    if '_extended' in variant:
-        baseline = False
-    else:
-        baseline = True
-        if '_baseline' not in variant:
-            v = variant.split('_')[-1]
-            
-    include_planck = True if 'actplanck' in variant else False
+    v,baseline,include_planck = parse_variant(variant)
     
 
     # output data
@@ -304,6 +311,9 @@ def load_data(variant,lens_only=False,
     else:
         warnings.warn(f"Disabled Hartlap correction to cinv: {hartlap_correction}")
         hartlap_correction = 1.0
+    if scale_cov is not None:
+        warnings.warn(f"Covariance has been artificially scaled by: {scale_cov}")
+        cov = cov * scale_cov
     d['cov'] = cov
     cinv = np.linalg.inv(cov) * hartlap_correction
     d['cinv'] = cinv
@@ -317,7 +327,14 @@ def load_data(variant,lens_only=False,
     return d
     
 
-def generic_lnlike(data_dict,cl_kk,cl_tt,cl_ee,cl_te,cl_bb):
+def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_lmax = 2998):
+
+    cl_kk = standardize(ell_kk,cl_kk,trim_lmax)
+    cl_tt = standardize(ell_cmb,cl_tt,trim_lmax)
+    cl_ee = standardize(ell_cmb,cl_ee,trim_lmax)
+    cl_bb = standardize(ell_cmb,cl_bb,trim_lmax)
+    cl_te = standardize(ell_cmb,cl_te,trim_lmax)
+    
     d = data_dict
     cinv = d['cinv']
     clkk_act = get_corrected_clkk(data_dict,cl_kk,cl_tt,cl_te,cl_ee,cl_bb) if d['likelihood_corrections'] else cl_kk
@@ -418,6 +435,7 @@ class ACTDR6LensLike(InstallableLikelihood):
     limber = False
     nz = 100
     kmax = 10
+    scale_cov = None
 
     def initialize(self):
         if self.lens_only: self.no_like_corrections = True
@@ -425,7 +443,7 @@ class ACTDR6LensLike(InstallableLikelihood):
         self.data = load_data(variant=self.variant,lens_only=self.lens_only,
                               like_corrections=not(self.no_like_corrections),apply_hartlap=self.apply_hartlap,
                               mock=self.mock,nsims_act=self.nsims_act,nsims_planck=self.nsims_planck,
-                              trim_lmax=self.trim_lmax)
+                              trim_lmax=self.trim_lmax,scale_cov=self.scale_cov)
         
         if self.no_like_corrections:
             self.requested_cls = ["pp"]
@@ -459,12 +477,9 @@ class ACTDR6LensLike(InstallableLikelihood):
         if self.limber:
             cl_kk = self.get_limber_clkk( **params_values)
         else:
-            cl_kk = standardize(ell,pp_to_kk(clpp,ell),self.trim_lmax)
-        cl_tt = standardize(ell,cl['tt'],self.trim_lmax)
-        cl_ee = standardize(ell,cl['ee'],self.trim_lmax)
-        cl_bb = standardize(ell,cl['bb'],self.trim_lmax)
-        cl_te = standardize(ell,cl['te'],self.trim_lmax)
-        logp = generic_lnlike(self.data,cl_kk,cl_tt,cl_ee,cl_te,cl_bb)
+            cl_kk = pp_to_kk(clpp,ell)
+        
+        logp = generic_lnlike(self.data,ell,cl_kk,ell,cl['tt'],cl['ee'],cl['te'],cl['bb'],self.trim_lmax)
         self.log.debug(
             f"ACT-DR6-lensing-like lnLike value = {logp} (chisquare = {-2 * logp})")
         return logp
