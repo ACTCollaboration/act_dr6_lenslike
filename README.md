@@ -7,8 +7,8 @@ Likelihood software for the ACT DR6 CMB lensing analysis.
 ## Step 2: copy data
 
 The data is available to ACT group members here:
-- ``niagara:/gpfs/fs0/project/r/rbond/msyriac/lensing/dr6/likelihood``
-- ``nersc:/global/project/projectdirs/act/data/lensing/dr6/likelihood``
+- ``niagara:/gpfs/fs0/project/r/rbond/msyriac/lensing/dr6/likelihood/data/v1.1``
+- ``nersc:/global/project/projectdirs/act/data/lensing/dr6/likelihood/data/v1.1``
 
 Copy such that the `data` directory is inside the directory that has `__init__.py` in the cloned repositry. Only then should you proceed with the next step.
 

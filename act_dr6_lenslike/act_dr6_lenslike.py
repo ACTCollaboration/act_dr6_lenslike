@@ -7,7 +7,7 @@ except:
     InstallableLikelihood = object
 import os
 file_dir = os.path.abspath(os.path.dirname(__file__))
-data_dir = f"{file_dir}/data/v1.0/"
+data_dir = f"{file_dir}/data/v1.1/"
 
 variants =[x.strip() for x in  '''
 act_baseline,
