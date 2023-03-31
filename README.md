@@ -33,8 +33,7 @@ data_dict = alike.load_data(variant,lens_only=lens_only)
 
 # Get cl_kk, cl_tt, cl_ee, cl_te, cl_bb predictions
 # Then call
-lnlike = alike.generic_lnlike(data_dict,cl_kk,cl_tt,cl_ee,cl_te,cl_bb)
-
+lnlike=alike.generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb)
 ```
 
 ### Cobaya likelihood
