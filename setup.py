@@ -13,6 +13,6 @@ setup(name="act_dr6_lenslike",
       # zip_safe=False,  # set to false if you want to easily access bundled package data files
       packages=['act_dr6_lenslike'],#, 'act_dr6_lenslike.tests'],
       # package_data={'act_dr6_lenslike': ['*.yaml', '*.bibtex', 'data/*', 'data/**/*']},
-      # test_suite='act_dr6_lenslike.tests',
+      test_suite='act_dr6_lenslike.tests',
       # tests_require=['camb>=1.0.5']
       )
