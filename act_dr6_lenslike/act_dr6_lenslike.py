@@ -307,7 +307,8 @@ def load_data(variant,lens_only=False,
     nsims = min(nsims_act,nsims_planck) if include_planck else nsims_act
     hartlap_correction = (nsims-nbins-2.)/(nsims-1.)
     if apply_hartlap:
-        print("Hartlap correction to cinv: ", hartlap_correction)
+        pass
+        #warnings.warn("Hartlap correction to cinv: ", hartlap_correction)
     else:
         warnings.warn(f"Disabled Hartlap correction to cinv: {hartlap_correction}")
         hartlap_correction = 1.0
