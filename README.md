@@ -7,21 +7,25 @@ This repository contains likelihood software for the ACT DR6 CMB lensing analysi
 
 ## Step 1: clone this repository
 
-## Step 2: copy data
+## Step 2: download and unpack data
 
-The data is available to ACT group members here:
-- ``niagara:/gpfs/fs0/project/r/rbond/msyriac/lensing/dr6/likelihood/data``
-- ``nersc:/global/project/projectdirs/act/data/lensing/dr6/likelihood/data``
+Download the likelihood data tarball for ACT DR6 lensing from [NASA's LAMBDA archive](https://lambda.gsfc.nasa.gov/product/act/actadv_prod_table.html).
 
-Copy such that the `data` directory is inside the directory that has `__init__.py` in the cloned repositry. Only then should you proceed with the next step.
+Extract the tarball into the `act_dr6_lenslike/data/` directory in the cloned repository such the directory `v1.1` is directly inside it. Only then should you proceed with the next steps.
 
 ## Step 3: install Python package
 
-Install with
+Install with symbolic links
 
     pip install -e . --user
     
-## Step 4: use in Python codes
+## Step 4: Run tests
+
+
+    python setup.py test
+    
+    
+## Step 5: use in Python codes
 
 ### Generic Python likelihood
 
