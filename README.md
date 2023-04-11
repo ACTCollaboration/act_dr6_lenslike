@@ -1,14 +1,17 @@
 # ACT DR6 Lensing Likelihood
 
-Likelihood software for the ACT DR6 CMB lensing analysis.
+This repository contains likelihood software for the ACT DR6 CMB lensing analysis. If you use this software and/or the associated data, please cite both of the following papers:
+1. Madhavacheril, Qu, Sherwin, MacCrann, Li et al ACT Collaboration (2023)
+2. Qu, Sherwin, Madhavacheril, Han, Crowley et al ACT Collaboration (2023)
+
 
 ## Step 1: clone this repository
 
 ## Step 2: copy data
 
 The data is available to ACT group members here:
-- ``niagara:/gpfs/fs0/project/r/rbond/msyriac/lensing/dr6/likelihood/data/v1.1``
-- ``nersc:/global/project/projectdirs/act/data/lensing/dr6/likelihood/data/v1.1``
+- ``niagara:/gpfs/fs0/project/r/rbond/msyriac/lensing/dr6/likelihood/data``
+- ``nersc:/global/project/projectdirs/act/data/lensing/dr6/likelihood/data``
 
 Copy such that the `data` directory is inside the directory that has `__init__.py` in the cloned repositry. Only then should you proceed with the next step.
 
@@ -31,7 +34,10 @@ lens_only = False
 # Do this once
 data_dict = alike.load_data(variant,lens_only=lens_only)
 
-# Get cl_kk, cl_tt, cl_ee, cl_te, cl_bb predictions
+# Get cl_kk, cl_tt, cl_ee, cl_te, cl_bb predictions from your Boltzmann code.
+# These are the CMB lensing convergence spectra (not potential or deflection)
+# as well as the TT, EE, TE, BB CMB spectra (needed for likelihood corrections)
+# in uK^2 units. All of these are C_ell (not D_ell), no ell or 2pi factors.
 # Then call
 lnlike=alike.generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb)
 ```
@@ -73,7 +79,6 @@ For CAMB calls, we recommend the following (or higher accuracy):
 
 ## Planned updates
 
-- Test likelihood values
 - Cobaya YAML files
 - CosmoSIS wrapper
 
