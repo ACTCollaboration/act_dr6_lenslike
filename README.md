@@ -1,8 +1,11 @@
 # ACT DR6 Lensing Likelihood
 
 This repository contains likelihood software for the ACT DR6 CMB lensing analysis. If you use this software and/or the associated data, please cite both of the following papers:
-1. Madhavacheril, Qu, Sherwin, MacCrann, Li et al ACT Collaboration (2023)
-2. Qu, Sherwin, Madhavacheril, Han, Crowley et al ACT Collaboration (2023)
+- [Madhavacheril, Qu, Sherwin, MacCrann, Li et al ACT Collaboration (2023), arxiv:2304.05203](https://arxiv.org/abs/2304.05203)
+- [Qu, Sherwin, Madhavacheril, Han, Crowley et al ACT Collaboration (2023), arxiv:2304.05202](https://arxiv.org/abs/2304.05202)
+
+In addition, if you use the ACT+Planck lensing combination variant from the likelihood, please also cite:
+- [Carron, Mirmelstein, Lewis (2022), arxiv:2206.07773, JCAP09(2022)039](https://arxiv.org/abs/2206.07773)
 
 
 ## Step 1: clone this repository
