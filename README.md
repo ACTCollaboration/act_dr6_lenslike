@@ -36,10 +36,14 @@ Install with symbolic links
 import act_dr6_lenslike as alike
 
 variant = 'act_baseline'
-lens_only = False
+lens_only = False # use True if not combining with any primary CMB data
+like_corrections = True # should be False if lens_only is True
 
 # Do this once
-data_dict = alike.load_data(variant,lens_only=lens_only)
+data_dict = alike.load_data(variant,lens_only=lens_only,like_corrections=like_corrections)
+# This dict will now have entries like `data_binned_clkk` (binned data vector), `cov`
+# (covariance matrix) and `binmat_act` (binning matrix to be applied to a theory
+# curve starting at ell=0).
 
 # Get cl_kk, cl_tt, cl_ee, cl_te, cl_bb predictions from your Boltzmann code.
 # These are the CMB lensing convergence spectra (not potential or deflection)
