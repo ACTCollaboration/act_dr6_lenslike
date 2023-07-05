@@ -7,6 +7,9 @@ This repository contains likelihood software for the ACT DR6 CMB lensing analysi
 In addition, if you use the ACT+Planck lensing combination variant from the likelihood, please also cite:
 - [Carron, Mirmelstein, Lewis (2022), arxiv:2206.07773, JCAP09(2022)039](https://arxiv.org/abs/2206.07773)
 
+## Chains
+
+A pre-release version of the chains from Madhavacheril et al are available [here](https://portal.nersc.gov/project/act/act_dr6_lensing/chains/). Please make sure to read the README file.
 
 ## Step 1: clone this repository
 
