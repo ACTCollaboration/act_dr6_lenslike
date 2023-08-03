@@ -69,6 +69,8 @@ likelihood:
         variant: act_baseline
 ```
 
+No other parameters need to be set. (e.g. do not manually set `like_corrections` or `no_like_corrections` here).
+
 ### Important parameters
 
 - `variant` should be
