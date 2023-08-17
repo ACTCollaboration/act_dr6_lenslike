@@ -17,7 +17,7 @@ class ACTLikeTest(unittest.TestCase):
         finally:
             print('Required data file not found at {}'.format(data_file))
             print('Please obtain it and place it correctly.')
-            print('The script [].sh will download and place it.')
+            print('The script get-act-data.sh will download and place it.')
         prefac = 2*np.pi/ell/(ell+1.)
         cl_kk=cl_pp/4*2*np.pi
         cl_bb = cl_bb*prefac
