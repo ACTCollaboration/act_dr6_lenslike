@@ -189,7 +189,8 @@ so for example,
 chi_square = -2 lnlike
 """
 
-def load_data(variant,lens_only=False,
+def load_data(variant, ddir=data_dir,
+              lens_only=False,
               apply_hartlap=True,like_corrections=True,mock=False,
               nsims_act=796,nsims_planck=400,trim_lmax=2998,scale_cov=None):
     """
@@ -243,7 +244,6 @@ def load_data(variant,lens_only=False,
 
         
     # Return data bandpowers, covariance matrix and binning matrix
-    ddir = data_dir
     if baseline:
         start = 2
         end = -6
