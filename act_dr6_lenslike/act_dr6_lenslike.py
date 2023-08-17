@@ -1,6 +1,7 @@
 import numpy as np
 import warnings
 from scipy.interpolate import interp1d
+from scipy.stats import binned_statistic as binnedstat
 try:
     from cobaya.likelihoods.base_classes import InstallableLikelihood
 except:
@@ -135,6 +136,41 @@ def parse_variant(variant):
     include_planck = True if 'actplanck' in variant else False
     return v,baseline,include_planck
 
+class bin1D:
+    '''
+    * Takes data defined on x0 and produces values binned on x.
+    * Assumes x0 is linearly spaced and continuous in a domain?
+    * Assumes x is continuous in a subdomain of x0.
+    * Should handle NaNs correctly.
+    '''
+    
+
+    def __init__(self, bin_edges):
+
+        self.update_bin_edges(bin_edges)
+
+
+    def update_bin_edges(self,bin_edges):
+        
+        self.bin_edges = bin_edges
+        self.numbins = len(bin_edges)-1
+        self.cents = (self.bin_edges[:-1]+self.bin_edges[1:])/2.
+
+        self.bin_edges_min = self.bin_edges.min()
+        self.bin_edges_max = self.bin_edges.max()
+
+    def bin(self,ix,iy,stat=np.nanmean):
+        x = ix.copy()
+        y = iy.copy()
+        # this just prevents an annoying warning (which is otherwise informative) everytime
+        # all the values outside the bin_edges are nans
+        y[x<self.bin_edges_min] = 0
+        y[x>self.bin_edges_max] = 0
+
+        # pretty sure this treats nans in y correctly, but should double-check!
+        bin_means = binnedstat(x,y,bins=self.bin_edges,statistic=stat)[0]
+        
+        return self.cents,bin_mean
 
 # ==================            
 # Generic likelihood
@@ -369,11 +405,10 @@ class GenericLimberCosmicShear(InstallableLikelihood):
     cmb_noise = None
 
     def initialize(self):
-        from orphics import stats
         import pyfisher
         bin_edges = np.geomspace(self.glmin,self.lmax,self.nell)
         bin_edges = bin_edges[bin_edges>self.lmin]
-        self.binner = stats.bin1D(bin_edges)
+        self.binner = bin1D(bin_edges)
         self.ls = np.arange(0,self.trim_lmax+2)
         if self.cmb_noise is None:
             nls_dict = {'kk': lambda x: x*0+self.shape_std**2/(2.*self.ngal_arcmin2*1.18e7)}
