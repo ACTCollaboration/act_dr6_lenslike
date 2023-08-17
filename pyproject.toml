@@ -10,11 +10,7 @@ classifiers = [
 	"License :: OSI Approved :: BSD License",
 ]
 dynamic = ["version", "description"]
-
-[options]
-install_requires =
-	numpy
-	scipy
+dependencies = ["numpy >=1", "scipy >=1"]
 
 [project.urls]
 Home = "https://msyriac.github.io/"
