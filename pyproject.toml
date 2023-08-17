@@ -1,0 +1,15 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "act_dr6_lenslike"
+authors = [{name = "Mathew Madhavacheril", email = "mathm@sas.upenn.edu"}]
+readme = "README.md"
+classifiers = [
+	"License :: OSI Approved :: BSD License",
+]
+dynamic = ["version", "description"]
+
+[project.urls]
+Home = "https://msyriac.github.io/"
