@@ -228,13 +228,13 @@ def load_data(variant, ddir=data_dir,
 
     # Fiducial spectra
     if like_corrections:
-        f_ls, f_tt, f_ee, f_bb, f_te = np.loadtxt(f"{data_dir}/like_corrs/cosmo2017_10K_acc3_lensedCls.dat",unpack=True)
+        f_ls, f_tt, f_ee, f_bb, f_te = np.loadtxt(f"{ddir}/like_corrs/cosmo2017_10K_acc3_lensedCls.dat",unpack=True)
         f_tt = f_tt / (f_ls * (f_ls+1.)) * 2. * np.pi
         f_ee = f_ee / (f_ls * (f_ls+1.)) * 2. * np.pi
         f_bb = f_bb / (f_ls * (f_ls+1.)) * 2. * np.pi
         f_te = f_te / (f_ls * (f_ls+1.)) * 2. * np.pi
 
-        fd_ls, f_dd = np.loadtxt(f"{data_dir}/like_corrs/cosmo2017_10K_acc3_lenspotentialCls.dat",unpack=True,usecols=[0,5])
+        fd_ls, f_dd = np.loadtxt(f"{ddir}/like_corrs/cosmo2017_10K_acc3_lenspotentialCls.dat",unpack=True,usecols=[0,5])
         f_kk = f_dd * 2. * np.pi / 4.
         d['fiducial_cl_tt'] = standardize(f_ls,f_tt,trim_lmax)
         d['fiducial_cl_te'] = standardize(f_ls,f_te,trim_lmax)
