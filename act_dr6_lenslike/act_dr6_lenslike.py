@@ -135,7 +135,6 @@ def parse_variant(variant):
     include_planck = True if 'actplanck' in variant else False
     return v,baseline,include_planck
 
-
 # ==================            
 # Generic likelihood
 # ==================
@@ -153,7 +152,8 @@ so for example,
 chi_square = -2 lnlike
 """
 
-def load_data(variant,lens_only=False,
+def load_data(variant, ddir=data_dir,
+              lens_only=False,
               apply_hartlap=True,like_corrections=True,mock=False,
               nsims_act=796,nsims_planck=400,trim_lmax=2998,scale_cov=None):
     """
@@ -191,13 +191,13 @@ def load_data(variant,lens_only=False,
 
     # Fiducial spectra
     if like_corrections:
-        f_ls, f_tt, f_ee, f_bb, f_te = np.loadtxt(f"{data_dir}/like_corrs/cosmo2017_10K_acc3_lensedCls.dat",unpack=True)
+        f_ls, f_tt, f_ee, f_bb, f_te = np.loadtxt(f"{ddir}/like_corrs/cosmo2017_10K_acc3_lensedCls.dat",unpack=True)
         f_tt = f_tt / (f_ls * (f_ls+1.)) * 2. * np.pi
         f_ee = f_ee / (f_ls * (f_ls+1.)) * 2. * np.pi
         f_bb = f_bb / (f_ls * (f_ls+1.)) * 2. * np.pi
         f_te = f_te / (f_ls * (f_ls+1.)) * 2. * np.pi
 
-        fd_ls, f_dd = np.loadtxt(f"{data_dir}/like_corrs/cosmo2017_10K_acc3_lenspotentialCls.dat",unpack=True,usecols=[0,5])
+        fd_ls, f_dd = np.loadtxt(f"{ddir}/like_corrs/cosmo2017_10K_acc3_lenspotentialCls.dat",unpack=True,usecols=[0,5])
         f_kk = f_dd * 2. * np.pi / 4.
         d['fiducial_cl_tt'] = standardize(f_ls,f_tt,trim_lmax)
         d['fiducial_cl_te'] = standardize(f_ls,f_te,trim_lmax)
@@ -207,7 +207,6 @@ def load_data(variant,lens_only=False,
 
         
     # Return data bandpowers, covariance matrix and binning matrix
-    ddir = data_dir
     if baseline:
         start = 2
         end = -6
@@ -369,7 +368,11 @@ class GenericLimberCosmicShear(InstallableLikelihood):
     cmb_noise = None
 
     def initialize(self):
-        from orphics import stats
+        try:
+            from orphics import stats
+        except ImportError:
+            print("Error importing orphics library. Please install.\n\
+                  available at https://github.com/msyriac/orphics")
         import pyfisher
         bin_edges = np.geomspace(self.glmin,self.lmax,self.nell)
         bin_edges = bin_edges[bin_edges>self.lmin]

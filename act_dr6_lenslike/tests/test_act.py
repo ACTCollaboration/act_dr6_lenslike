@@ -5,10 +5,19 @@ import matplotlib.pyplot as plt
 data_dir = alike.data_dir
 
 
+
 class ACTLikeTest(unittest.TestCase):
 
     def generic_call(self,variant,lens_only,exp_chisq=None):
-        ell, cl_tt, cl_ee, cl_bb, cl_te, cl_pp, cl_tp, cl_ep= np.loadtxt(data_dir+'like_corrs/cosmo2017_10K_acc3_lenspotentialCls.dat', unpack=True)
+        data_file = data_dir+'like_corrs/cosmo2017_10K_acc3_lenspotentialCls.dat'
+        try:
+            ell, cl_tt, cl_ee, cl_bb, cl_te, cl_pp, cl_tp, cl_ep= np.loadtxt(data_file, unpack=True)
+        except OSError:
+            raise
+        finally:
+            print('Required data file not found at {}'.format(data_file))
+            print('Please obtain it and place it correctly.')
+            print('The script get-act-data.sh will download and place it.')
         prefac = 2*np.pi/ell/(ell+1.)
         cl_kk=cl_pp/4*2*np.pi
         cl_bb = cl_bb*prefac
