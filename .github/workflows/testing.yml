@@ -30,7 +30,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Cache ACT DR6 Lensing Data
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-act
         with:
           path: act_dr6_lenslike/data/v1.1
@@ -44,4 +44,5 @@ jobs:
       - name: Run Tests
         shell: bash -l {0}
         run: |
+          conda activate test
           pytest -v
