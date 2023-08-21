@@ -19,6 +19,7 @@ jobs:
       - name: Install Conda w/ Python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v2
         with:
+          activate-environment: test
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
 
@@ -43,4 +44,4 @@ jobs:
       - name: Run Tests
         shell: bash -l {0}
         run: |
-          pytest
+          pytest -v
