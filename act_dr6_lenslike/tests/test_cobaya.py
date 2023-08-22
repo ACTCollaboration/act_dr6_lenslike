@@ -7,13 +7,13 @@ from act_dr6_lenslike import ACTDR6LensLike
 
 info = {
     "params" : {
-        'ombh2': 2.2337930e-2,
-        'omch2': 1.2041740e-1,
-        'tau':5.1464010e-2,
-        'ns':9.6556980e-1,
-        'H0':6.7175290e1,
-        'As':2.1005920e-9,
-        'mnu': 0.06
+        'ombh2': 0.02219218,
+        'omch2': 0.1203058,
+        'tau': 0.06574325,
+        'ns': 0.9625356,
+        'H0': 67.02393,
+        'As': 2.15086031154146e-9,
+        'omnuh2': 0.00064
         },
     "theory" : {
         "camb" : { 'extra_args' : {
@@ -28,6 +28,35 @@ info = {
             }
         }
 }
+
+# these parameters are close to those in https://mapsims.readthedocs.io/en/latest/camb.html
+# BUT result in more chisq failures
+# info = {
+#     "params" : {
+#         'ombh2': 0.02219218,
+#         'omch2': 0.1203058,
+#         'tau': 0.6574325e-1,
+#         'ns': 0.9625356,
+#         'H0': 67.02393,
+#         'As': 2.15086031154146e-9,
+#         'omnuh2': 0.00064,
+#         },
+#     "theory" : {
+#         "camb" : { 'extra_args' : {
+#                     'lmax' : 10000,
+#                     'lens_margin' : 1250,
+#                     'lens_potential_accuracy' : 4,
+#                     'AccuracyBoost' : 3,
+#                     'lSampleBoost' : 1,
+#                     'lAccuracyBoost' : 3,
+#                     'halofit_version' : 'mead2016',
+#                     'num_nu_massless': 2.046,
+#                     'nu_mass_eigenstates': 1,
+#                     'num_nu_massive': 1,
+#                     }
+#             }
+#         }
+# }
 
 class ACTLikeTest(unittest.TestCase):
 
