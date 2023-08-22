@@ -10,9 +10,10 @@ setup(name="act_dr6_lenslike",
       author=__author__,
       license='BSD 2-Clause',
       description='Likelihood software for ACT DR6 CMB lensing',
-      # zip_safe=False,  # set to false if you want to easily access bundled package data files
+      zip_safe=False,  # set to false if you want to easily access bundled package data files
       packages=['act_dr6_lenslike'],#, 'act_dr6_lenslike.tests'],
-      # package_data={'act_dr6_lenslike': ['*.yaml', '*.bibtex', 'data/*', 'data/**/*']},
+      package_data={'act_dr6_lenslike': ['*.yaml', '*.bibtex', 'data/*', 'data/**/*']},
       test_suite='act_dr6_lenslike.tests',
+      extras_require={'cobaya' : ['cobaya']}
       # tests_require=['camb>=1.0.5']
       )

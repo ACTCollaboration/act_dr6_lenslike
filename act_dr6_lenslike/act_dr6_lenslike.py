@@ -354,7 +354,7 @@ def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_l
 
 class ACTDR6LensLike(InstallableLikelihood):
 
-    lmax: int
+    lmax: int = 4000
     mock = False
     nsims_act = 792. # Number of sims used for covmat; used in Hartlap correction
     nsims_planck = 400. # Number of sims used for covmat; used in Hartlap correction

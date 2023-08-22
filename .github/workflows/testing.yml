@@ -43,8 +43,22 @@ jobs:
         run: |
             ./get-act-data.sh
 
-      - name: Run Tests
+      - name: Run Python Likelihood Tests
         shell: bash -l {0}
         run: |
           conda activate test
-          pytest -v
+          pytest -v act_dr6_lenslike/tests/test_act.py
+
+      - name: Install Cobaya and Camb
+        shell: bash -l {0}
+        run: |
+          conda activate test
+          pip install cobaya
+          cobaya-install camb
+
+      - name: Run Cobaya Likelihood Tests
+        shell: bash -l {0}
+        run: |
+          conda activate test
+          pytest -v act_dr6_lenslike/tests/test_cobaya.py
+
