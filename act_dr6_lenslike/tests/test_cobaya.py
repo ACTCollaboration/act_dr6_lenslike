@@ -17,7 +17,7 @@ info = {
         },
     "theory" : {
         "camb" : { 'extra_args' : {
-                    'lmax' : 4000,
+                    'lmax' : 10000,
                     'lens_margin' : 1250,
                     'lens_potential_accuracy' : 4,
                     'AccuracyBoost' : 1,
@@ -35,24 +35,36 @@ info = {
 #     "params" : {
 #         'ombh2': 0.02219218,
 #         'omch2': 0.1203058,
-#         'tau': 0.6574325e-1,
 #         'ns': 0.9625356,
 #         'H0': 67.02393,
 #         'As': 2.15086031154146e-9,
 #         'omnuh2': 0.00064,
+#         'omk': 0,
 #         },
 #     "theory" : {
 #         "camb" : { 'extra_args' : {
-#                     'lmax' : 10000,
-#                     'lens_margin' : 1250,
-#                     'lens_potential_accuracy' : 4,
 #                     'AccuracyBoost' : 3,
 #                     'lSampleBoost' : 1,
 #                     'lAccuracyBoost' : 3,
-#                     'halofit_version' : 'mead2016',
-#                     'num_nu_massless': 2.046,
+#                     'Accuracy.LensingBoost': 3,
 #                     'nu_mass_eigenstates': 1,
 #                     'num_nu_massive': 1,
+#                     'MassiveNuMethod': 1,
+#                     'nonlinear': 3,
+#                     'max_l': 10000,
+#                     'max_eta_k':  20000.00000000000,
+#                     'DoLensing': True,
+#                     'share_delta_neff': True,
+#                     'nu_mass_fractions': [1.0],
+#                     'TCMB': 2.7255,
+#                     'num_nu_massless': 2.046,
+#                     'Alens': 1.00000000000000,
+#                     'Reion.helium_delta_redshift': 0.5,
+#                     'Reion.helium_redshiftstart': 5.0,
+#                     'Reion.use_optical_depth': True,
+#                     'Reion.optical_depth': 0.6574325E-01,
+#                     'Transfer.accurate_massive_neutrinos': True,
+#                     'NonLinearModel.halofit_version' : 'mead2016'
 #                     }
 #             }
 #         }
