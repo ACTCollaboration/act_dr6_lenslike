@@ -4,7 +4,8 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "act_dr6_lenslike"
-authors = [{name = "Mathew Madhavacheril", email = "mathm@sas.upenn.edu"}]
+authors = [{name = "Mathew Madhavacheril", email = "mathm@sas.upenn.edu"},
+		   {name = "Ian Harrison", email = "harrisoni@cardiff.ac.uk"}]
 readme = "README.md"
 classifiers = [
 	"License :: OSI Approved :: BSD License",
