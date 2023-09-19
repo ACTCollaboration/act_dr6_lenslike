@@ -370,7 +370,7 @@ class ACTDR6LensLike(InstallableLikelihood):
     kmax = 10
     zmax = None
     scale_cov = None
-    alens = False # Whether to divide the theory spectrum by Alens
+    remove_alens = False # Whether to divide the theory spectrum by Alens
 
     def initialize(self):
         if self.lens_only: self.no_like_corrections = True
@@ -409,7 +409,7 @@ class ACTDR6LensLike(InstallableLikelihood):
     def loglike(self, cl, **params_values):
         ell = cl['ell']
         Alens = 1
-        if self.alens:
+        if self.remove_alens:
             Alens = self.theory.get_param('Alens')
         clpp = cl['pp'] / Alens
         if self.limber:
