@@ -319,7 +319,7 @@ def load_data(variant, ddir=data_dir,
     d['cinv'] = cinv
 
     if mock:
-        mclpp = np.loadtxt(f"{self.ddir}/cls_default_dr6_accuracy.txt",usecols=[5])
+        mclpp = np.loadtxt(f"{ddir}/cls_default_dr6_accuracy.txt",usecols=[5])
         ls = np.arange(mclpp.size)
         mclkk = mclpp * 2. * np.pi / 4.
         self.clkk_data = self.binning_matrix @ mclkk[:self.kLmax]
@@ -354,7 +354,7 @@ def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_l
 
 class ACTDR6LensLike(InstallableLikelihood):
 
-    lmax: int
+    lmax: int = 4000
     mock = False
     nsims_act = 792. # Number of sims used for covmat; used in Hartlap correction
     nsims_planck = 400. # Number of sims used for covmat; used in Hartlap correction
@@ -368,8 +368,9 @@ class ACTDR6LensLike(InstallableLikelihood):
     limber = False
     nz = 100
     kmax = 10
+    zmax = None
     scale_cov = None
-    alens = False # Whether to divide the theory spectrum by Alens
+    varying_cmb_alens = False # Whether to divide the theory spectrum by Alens
 
     def initialize(self):
         if self.lens_only: self.no_like_corrections = True
@@ -408,7 +409,7 @@ class ACTDR6LensLike(InstallableLikelihood):
     def loglike(self, cl, **params_values):
         ell = cl['ell']
         Alens = 1
-        if self.alens:
+        if self.varying_cmb_alens:
             Alens = self.theory.get_param('Alens')
         clpp = cl['pp'] / Alens
         if self.limber:

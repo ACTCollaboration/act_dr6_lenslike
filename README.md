@@ -91,7 +91,7 @@ For CAMB calls, we recommend the following (or higher accuracy):
 - `AccuracyBoost`:1
 - `lSampleBoost`:1
 - `lAccuracyBoost`:1
-- `halofit`:`mead2016`
+- `halofit_version`:`mead2016`
 
 ## Planned updates
 

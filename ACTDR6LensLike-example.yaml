@@ -1,0 +1,33 @@
+debug: True
+force: True
+output: example/output/ACTDR6LensLike
+
+sampler:
+    evaluate: Null
+
+theory:
+    camb:
+        extra_args:
+            lmax: 4000
+            lens_margin: 1250
+            lens_potential_accuracy: 4
+            AccuracyBoost: 1
+            lSampleBoost: 1
+            lAccuracyBoost: 1
+            halofit_version: 'mead2016'
+
+likelihood:
+    act_dr6_lenslike.ACTDR6LensLike:
+        lens_only: False
+        stop_at_error: True
+        lmax: 4000
+        variant: act_baseline
+
+params:
+    ombh2: 0.02219218
+    omch2: 0.1203058
+    ns: 0.9625356
+    H0: 67.02393
+    As: 2.15086031154146e-9
+    omnuh2: 0.00064
+    omk: 0

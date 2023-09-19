@@ -1,0 +1,66 @@
+name: Continuous Integration
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name:  ${{ matrix.os }}-${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Install Conda w/ Python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: test
+          python-version: ${{ matrix.python-version }}
+          channels: conda-forge
+
+      - name: Install dependencies
+        shell: bash -l {0}
+        run: |
+          conda activate test
+          python -m pip install --upgrade pip
+          pip install pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Cache ACT DR6 Lensing Data
+        uses: actions/cache@v3
+        id: cache-act
+        with:
+          path: act_dr6_lenslike/data/v1.1
+          key: ${{ runner.os }}-act-dr6-v1.1
+
+      - name: Download ACT DR6 Lensing Data
+        if: steps.cache-act.outputs.cache-hit != 'true'
+        run: |
+            ./get-act-data.sh
+
+      - name: Run Python Likelihood Tests
+        shell: bash -l {0}
+        run: |
+          conda activate test
+          pytest -v act_dr6_lenslike/tests/test_act.py
+
+      - name: Install Cobaya and Camb
+        shell: bash -l {0}
+        run: |
+          conda activate test
+          conda install gfortran
+          pip install cobaya
+          export COBAYA_PACKAGES_PATH="../packages"
+          cobaya-install camb
+
+      - name: Run Cobaya Likelihood Tests
+        shell: bash -l {0}
+        run: |
+          conda activate test
+          pytest -v act_dr6_lenslike/tests/test_cobaya.py
+

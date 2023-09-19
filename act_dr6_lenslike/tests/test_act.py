@@ -1,7 +1,6 @@
 import unittest
 import act_dr6_lenslike as alike
 import numpy as np
-import matplotlib.pyplot as plt
 data_dir = alike.data_dir
 
 
