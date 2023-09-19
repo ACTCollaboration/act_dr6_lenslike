@@ -327,7 +327,7 @@ def load_data(variant, ddir=data_dir,
     return d
     
 
-def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_lmax=2998,return_theory=False):
+def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_lmax = 2998):
 
     cl_kk = standardize(ell_kk,cl_kk,trim_lmax)
     cl_tt = standardize(ell_cmb,cl_tt,trim_lmax)
@@ -344,10 +344,7 @@ def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_l
         bclkk = np.append(bclkk, d['binmat_planck'] @ clkk_planck)
     delta = d['data_binned_clkk'] - bclkk
     lnlike = -0.5 * np.dot(delta,np.dot(cinv,delta))
-    if return_theory:
-        lnlike, bclkk
-    else:
-        return lnlike
+    return lnlike
 
     
 # =================            
