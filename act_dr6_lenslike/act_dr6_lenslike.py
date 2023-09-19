@@ -319,7 +319,7 @@ def load_data(variant, ddir=data_dir,
     d['cinv'] = cinv
 
     if mock:
-        mclpp = np.loadtxt(f"{self.ddir}/cls_default_dr6_accuracy.txt",usecols=[5])
+        mclpp = np.loadtxt(f"{ddir}/cls_default_dr6_accuracy.txt",usecols=[5])
         ls = np.arange(mclpp.size)
         mclkk = mclpp * 2. * np.pi / 4.
         self.clkk_data = self.binning_matrix @ mclkk[:self.kLmax]
@@ -368,6 +368,7 @@ class ACTDR6LensLike(InstallableLikelihood):
     limber = False
     nz = 100
     kmax = 10
+    zmax = None
     scale_cov = None
     alens = False # Whether to divide the theory spectrum by Alens
 
