@@ -1,6 +1,6 @@
 # ACT DR6 Lensing Likelihood
-![PyPI Badge](https://img.shields.io/pypi/v/act_dr6_lenslike?label=PyPI&logo=pypi)
-![CI Badge](https://github.com/ACTCollaboration/act_dr6_lenslike/actions/workflows/testing.yml/badge.svg)
+[![PyPI Badge](https://img.shields.io/pypi/v/act_dr6_lenslike?label=PyPI&logo=pypi)](https://pypi.org/project/act_dr6_lenslike/)
+[![CI Badge](https://github.com/ACTCollaboration/act_dr6_lenslike/actions/workflows/testing.yml/badge.svg)](https://github.com/ACTCollaboration/act_dr6_lenslike/actions)
 
 This repository contains likelihood software for the ACT DR6 CMB lensing analysis. If you use this software and/or the associated data, please cite both of the following papers:
 - [Madhavacheril, Qu, Sherwin, MacCrann, Li et al ACT Collaboration (2023), arxiv:2304.05203](https://arxiv.org/abs/2304.05203)
