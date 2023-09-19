@@ -1,4 +1,6 @@
 # ACT DR6 Lensing Likelihood
+![PyPI Badge](https://img.shields.io/pypi/v/act_dr6_lenslike?label=PyPI&logo=pypi)
+![CI Badge](https://github.com/ACTCollaboration/act_dr6_lenslike/actions/workflows/testing.yml/badge.svg)
 
 This repository contains likelihood software for the ACT DR6 CMB lensing analysis. If you use this software and/or the associated data, please cite both of the following papers:
 - [Madhavacheril, Qu, Sherwin, MacCrann, Li et al ACT Collaboration (2023), arxiv:2304.05203](https://arxiv.org/abs/2304.05203)
@@ -11,27 +13,28 @@ In addition, if you use the ACT+Planck lensing combination variant from the like
 
 A pre-release version of the chains from Madhavacheril et al are available [here](https://portal.nersc.gov/project/act/act_dr6_lensing/chains/). Please make sure to read the README file.
 
-## Step 1: clone this repository
+## Step 1: Install
+### Option 1: Install from PyPI
+You can install the likelihood directly with:
+
+    pip install act_dr6_lenslike
+
+### Option 2: Install from Github
+If you wish to be able to make changes to the likelihood for development, first clone this repository. Then install with symbolic links:
+
+    pip install -e . --user
+
+Tests can be run using 
+
+    python setup.py test
 
 ## Step 2: download and unpack data
 
 Download the likelihood data tarball for ACT DR6 lensing from [NASA's LAMBDA archive](https://lambda.gsfc.nasa.gov/product/act/actadv_prod_table.html).
 
 Extract the tarball into the `act_dr6_lenslike/data/` directory in the cloned repository such the directory `v1.1` is directly inside it. Only then should you proceed with the next steps.
-
-## Step 3: install Python package
-
-Install with symbolic links
-
-    pip install -e . --user
     
-## Step 4: Run tests
-
-
-    python setup.py test
-    
-    
-## Step 5: use in Python codes
+## Step 3: use in Python codes
 
 ### Generic Python likelihood
 
@@ -70,6 +73,7 @@ likelihood:
 ```
 
 No other parameters need to be set. (e.g. do not manually set `like_corrections` or `no_like_corrections` here).
+An example is provided in `ACTDR6LensLike-example.yaml`
 
 ### Important parameters
 
@@ -92,10 +96,3 @@ For CAMB calls, we recommend the following (or higher accuracy):
 - `lSampleBoost`:1
 - `lAccuracyBoost`:1
 - `halofit_version`:`mead2016`
-
-## Planned updates
-
-- Cobaya YAML files
-- CosmoSIS wrapper
-
-
