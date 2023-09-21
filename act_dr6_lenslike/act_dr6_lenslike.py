@@ -398,11 +398,11 @@ class ACTDR6LensLike(InstallableLikelihood):
         return ret
 
     def logp(self, **params_values):
-        cl = self.theory.get_Cl(ell_factor=False, units='FIRASmuK2')
+        cl = self.provider.get_Cl(ell_factor=False, units='FIRASmuK2')
         return self.loglike(cl, **params_values)
 
     def get_limber_clkk(self,**params_values):
-        Pfunc = self.theory.get_Pk_interpolator(var_pair=("Weyl", "Weyl"), nonlinear=True, extrap_kmax=30.)
+        Pfunc = self.provider.get_Pk_interpolator(var_pair=("Weyl", "Weyl"), nonlinear=True, extrap_kmax=30.)
         results = self.provider.get_CAMBdata()
         return get_limber_clkk_flat_universe(results,Pfunc,self.trim_lmax,self.kmax,nz,zstar=None)
 
@@ -410,7 +410,7 @@ class ACTDR6LensLike(InstallableLikelihood):
         ell = cl['ell']
         Alens = 1
         if self.varying_cmb_alens:
-            Alens = self.theory.get_param('Alens')
+            Alens = self.provider.get_param('Alens')
         clpp = cl['pp'] / Alens
         if self.limber:
             cl_kk = self.get_limber_clkk( **params_values)
