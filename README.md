@@ -30,6 +30,8 @@ Tests can be run using
 
 ## Step 2: download and unpack data
 
+This can be performed automatically with the supplied `get-act-data.sh` script. Otherwise follow the steps below.
+
 Download the likelihood data tarball for ACT DR6 lensing from [NASA's LAMBDA archive](https://lambda.gsfc.nasa.gov/product/act/actadv_prod_table.html).
 
 Extract the tarball into the `act_dr6_lenslike/data/` directory in the cloned repository such the directory `v1.1` is directly inside it. Only then should you proceed with the next steps.
