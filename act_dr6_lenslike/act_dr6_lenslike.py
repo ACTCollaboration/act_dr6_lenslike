@@ -223,6 +223,12 @@ def load_data(variant, ddir=data_dir,
     """
     # TODO: review defaults
 
+    if not os.path.exists(ddir):
+        raise FileNotFoundError("Requested data directory {} does not exist.\
+                                Please place the data there. Default data can \
+                                be downloaded to the default location \
+                                with the act_dr6_lenslike.get_data() function.".format(ddir))
+
 
     v,baseline,include_planck = parse_variant(variant)
     
