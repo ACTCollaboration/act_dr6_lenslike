@@ -7,7 +7,7 @@ data_dir = alike.data_dir
 
 class ACTLikeTest(unittest.TestCase):
 
-    def generic_call(self,variant,lens_only,exp_chisq=None):
+    def generic_call(self,variant,lens_only,exp_chisq=None,return_theory=False):
         data_file = data_dir+'like_corrs/cosmo2017_10K_acc3_lenspotentialCls.dat'
         try:
             ell, cl_tt, cl_ee, cl_bb, cl_te, cl_pp, cl_tp, cl_ep= np.loadtxt(data_file, unpack=True)
@@ -26,13 +26,20 @@ class ACTLikeTest(unittest.TestCase):
         data_dict = alike.load_data(variant,lens_only=lens_only,like_corrections=not(lens_only))
         ell_kk = ell
         ell_cmb=ell
-        chisq=-2*alike.generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_lmax = 2998)
-        self.assertAlmostEqual(chisq,  exp_chisq, 1)
+
+        if return_theory:
+            chisq,bclkk=alike.generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_lmax = 2998,return_theory=True)
+            self.assertAlmostEqual(-2*chisq,  exp_chisq, 1)
+        else:
+            chisq=-2*alike.generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_lmax = 2998)
+            self.assertAlmostEqual(chisq,  exp_chisq, 1)
 
     def test_act_baseline_lensonly(self):
         self.generic_call('act_baseline',True,14.06)
     def test_act_baseline(self):
         self.generic_call('act_baseline',False,14.71)
+    def test_act_baseline_return_theory(self):
+        self.generic_call('act_baseline',False,14.71,return_theory=True)
     def test_actplanck_baseline_lensonly(self):
         self.generic_call('actplanck_baseline',True,21.07)
     def test_actplanck_baseline(self):
@@ -55,6 +62,7 @@ class ACTLikeTest(unittest.TestCase):
 if __name__ == '__main__':
     ACTLikeTest().test_act_baseline_lensonly()
     ACTLikeTest().test_act_baseline()
+    ACTLikeTest().test_act_baseline_return_theory()
     ACTLikeTest().test_actplanck_baseline_lensonly()
     ACTLikeTest().test_actplanck_baseline()
     ACTLikeTest().test_act_extended_lensonly()

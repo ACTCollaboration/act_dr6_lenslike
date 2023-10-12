@@ -24,6 +24,54 @@ act_cinpaint
 # HELPER FUNCTIONS
 # ================
 
+def download(url, filename):
+    # thanks to https://stackoverflow.com/a/63831344
+    # this function can be considered CC-BY-SA 4.0
+    import functools
+    import pathlib
+    import shutil
+    import requests
+    from tqdm.auto import tqdm
+    
+    r = requests.get(url, stream=True, allow_redirects=True)
+    if r.status_code != 200:
+        r.raise_for_status()  # Will only raise for 4xx codes, so...
+        raise RuntimeError(f"Request to {url} returned status code {r.status_code}")
+    file_size = int(r.headers.get('Content-Length', 0))
+
+    path = pathlib.Path(filename).expanduser().resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    desc = "(Unknown total file size)" if file_size == 0 else ""
+    r.raw.read = functools.partial(r.raw.read, decode_content=True)  # Decompress if needed
+    with tqdm.wrapattr(r.raw, "read", total=file_size, desc=desc) as r_raw:
+        with path.open("wb") as f:
+            shutil.copyfileobj(r_raw, f)
+
+    return path
+
+def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/likelihood/data/",
+             data_filename="ACT_dr6_likelihood_v1.1.tgz"):
+
+    if os.path.exists(os.path.join(file_dir, data_dir)):
+        print('Data already exists at {}, not downloading again.'.format(os.path.join(file_dir, data_dir)))
+    else:
+        import tarfile
+
+        orig_cwd = os.getcwd()
+        os.mkdir(os.path.join(file_dir, data_dir))
+        os.chdir(os.path.join(file_dir, data_dir))
+
+        print('Downloading data {} and placing it in likelihood folder.'.format(data_filename))
+        download(data_url+data_filename, data_filename)
+
+        tar = tarfile.open(data_filename)
+        tar.extractall()
+        tar.close()
+
+        os.remove(data_filename)
+        os.chdir(orig_cwd)
+
 def pp_to_kk(clpp,ell):
     return clpp * (ell*(ell+1.))**2. / 4.
     
@@ -174,6 +222,12 @@ def load_data(variant, ddir=data_dir,
     
     """
     # TODO: review defaults
+
+    if not os.path.exists(ddir):
+        raise FileNotFoundError("Requested data directory {} does not exist.\
+                                Please place the data there. Default data can \
+                                be downloaded to the default location \
+                                with the act_dr6_lenslike.get_data() function.".format(ddir))
 
 
     v,baseline,include_planck = parse_variant(variant)
@@ -345,7 +399,7 @@ def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_l
     delta = d['data_binned_clkk'] - bclkk
     lnlike = -0.5 * np.dot(delta,np.dot(cinv,delta))
     if return_theory:
-        lnlike, bclkk
+        return lnlike, bclkk
     else:
         return lnlike
 
