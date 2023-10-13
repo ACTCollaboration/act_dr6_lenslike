@@ -11,7 +11,7 @@ classifiers = [
 	"License :: OSI Approved :: BSD License",
 ]
 dynamic = ["version", "description"]
-dependencies = ["numpy >=1", "scipy >=1"]
+dependencies = ["numpy >=1", "scipy >=1", "pytest", "tqdm", "requests"]
 
 [project.urls]
 Source = "https://github.com/ACTCollaboration/act_dr6_lenslike"

@@ -66,7 +66,7 @@ def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/
         download(data_url+data_filename, data_filename)
 
         tar = tarfile.open(data_filename)
-        tar.extractall()
+        tar.extractall(path=os.path.join(file_dir, data_dir).rstrip('v1.1/')) # this is not great
         tar.close()
 
         os.remove(data_filename)
