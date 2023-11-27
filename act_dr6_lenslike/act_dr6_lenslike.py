@@ -288,7 +288,7 @@ def load_data(variant, ddir=data_dir,
     bcents = binmat@pells
     ls = np.arange(binmat.shape[1])
     d['binmat_act'] = standardize(ls,binmat[start:end,:],trim_lmax,extra_dims="xy")
-    d['bcents_act'] = bcents.copy()
+    d['bcents_act'] = bcents[start:end].copy()
 
     if lens_only:
         if include_planck:
