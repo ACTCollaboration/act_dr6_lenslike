@@ -6,8 +6,7 @@ try:
 except:
     InstallableLikelihood = object
 import os
-file_dir = os.path.abspath(os.path.dirname(__file__))
-data_dir = f"{file_dir}/data/v1.1/"
+default_version = "v1.2"
 
 variants =[x.strip() for x in  '''
 act_baseline,
@@ -51,7 +50,13 @@ def download(url, filename):
     return path
 
 def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/likelihood/data/",
-             data_filename="ACT_dr6_likelihood_v1.1.tgz"):
+             data_filename_root="ACT_dr6_likelihood",version=None):
+
+    if version is None:
+        version = default_version
+    data_filename = f"f{data_filename_root}_{version}.tgz"
+    file_dir = os.path.abspath(os.path.dirname(__file__))
+    data_dir = f"{file_dir}/data/{version}/"
 
     if os.path.exists(os.path.join(file_dir, data_dir)):
         print('Data already exists at {}, not downloading again.'.format(os.path.join(file_dir, data_dir)))
@@ -66,7 +71,7 @@ def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/
         download(data_url+data_filename, data_filename)
 
         tar = tarfile.open(data_filename)
-        tar.extractall(path=os.path.join(file_dir, data_dir).rstrip('v1.1/')) # this is not great
+        tar.extractall(path=os.path.join(file_dir, data_dir).rstrip(f'{version}/')) # this is not great
         tar.close()
 
         os.remove(data_filename)
@@ -75,17 +80,22 @@ def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/
 def pp_to_kk(clpp,ell):
     return clpp * (ell*(ell+1.))**2. / 4.
     
-def get_corrected_clkk(data_dict,clkk,cltt,clte,clee,clbb,suff=''):
+def get_corrected_clkk(data_dict,clkk,cltt,clte,clee,clbb,suff='',
+                       do_N1kk_corr=True, do_N1cmb_corr=True):
     clkk_fid = data_dict['fiducial_cl_kk']
     cl_dict = {'tt':cltt,'te':clte,'ee':clee,'bb':clbb}
-    N1_kk_corr = data_dict[f'dN1_kk{suff}'] @ (clkk-clkk_fid)
+    if do_N1kk_corr:
+        N1_kk_corr = data_dict[f'dN1_kk{suff}'] @ (clkk-clkk_fid)
+    else:
+        N1_kk_corr = 0
     dNorm = data_dict[f'dAL_dC{suff}']
     fid_norm = data_dict[f'fAL{suff}']
     N1_cmb_corr = 0.
     norm_corr = 0.
     for i,s in enumerate(['tt','ee','bb','te']):
         cldiff = (cl_dict[s]-data_dict[f'fiducial_cl_{s}'])
-        N1_cmb_corr = N1_cmb_corr + (data_dict[f'dN1_{s}{suff}']@cldiff)
+        if do_N1cmb_corr:
+            N1_cmb_corr = N1_cmb_corr + (data_dict[f'dN1_{s}{suff}']@cldiff)
         c = - 2. * (dNorm[i] @ cldiff)
         if i==0:
             ls = np.arange(c.size)
@@ -200,10 +210,11 @@ so for example,
 chi_square = -2 lnlike
 """
 
-def load_data(variant, ddir=data_dir,
+def load_data(variant, ddir=None,
               lens_only=False,
               apply_hartlap=True,like_corrections=True,mock=False,
-              nsims_act=796,nsims_planck=400,trim_lmax=2998,scale_cov=None):
+              nsims_act=796,nsims_planck=400,trim_lmax=2998,scale_cov=None,
+              version=None):
     """
     Given a data directory path, this function loads into a dictionary
     the data products necessary for evaluating the DR6 lensing likelihood.
@@ -222,6 +233,12 @@ def load_data(variant, ddir=data_dir,
     
     """
     # TODO: review defaults
+    if version is None:
+        version = default_version
+
+    if ddir is None:
+        file_dir = os.path.abspath(os.path.dirname(__file__))
+        ddir = f"{file_dir}/data/{version}/"
 
     if not os.path.exists(ddir):
         raise FileNotFoundError("Requested data directory {} does not exist.\
@@ -230,6 +247,7 @@ def load_data(variant, ddir=data_dir,
                                 with the act_dr6_lenslike.get_data() function.".format(ddir))
 
 
+    print(f"Loading ACT DR6 lensing likelihood {version}...")
     v,baseline,include_planck = parse_variant(variant)
     
 
@@ -428,6 +446,7 @@ class ACTDR6LensLike(InstallableLikelihood):
     zmax = None
     scale_cov = None
     varying_cmb_alens = False # Whether to divide the theory spectrum by Alens
+    version = None
 
     def initialize(self):
         if self.lens_only: self.no_like_corrections = True
@@ -435,7 +454,7 @@ class ACTDR6LensLike(InstallableLikelihood):
         self.data = load_data(variant=self.variant,lens_only=self.lens_only,
                               like_corrections=not(self.no_like_corrections),apply_hartlap=self.apply_hartlap,
                               mock=self.mock,nsims_act=self.nsims_act,nsims_planck=self.nsims_planck,
-                              trim_lmax=self.trim_lmax,scale_cov=self.scale_cov)
+                              trim_lmax=self.trim_lmax,scale_cov=self.scale_cov,version=self.version)
         
         if self.no_like_corrections:
             self.requested_cls = ["pp"]
