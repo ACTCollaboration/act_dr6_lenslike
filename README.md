@@ -75,7 +75,10 @@ likelihood:
 ```
 
 No other parameters need to be set. (e.g. do not manually set `like_corrections` or `no_like_corrections` here).
-An example is provided in `ACTDR6LensLike-example.yaml`
+An example is provided in `ACTDR6LensLike-example.yaml`. If, however, you are combining with
+the ACT DR4 CMB 2-point power spectrum likelihood, you should also set `no_actlike_cmb_corrections: True`
+(in addition to `lens_only: True` as described below). You do not need to do this if you are combining
+with Planck CMB 2-point power spectrum likelihoods.
 
 ### Important parameters
 
