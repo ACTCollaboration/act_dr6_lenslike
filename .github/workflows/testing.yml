@@ -35,8 +35,8 @@ jobs:
         uses: actions/cache@v3
         id: cache-act
         with:
-          path: act_dr6_lenslike/data/v1.1
-          key: ${{ runner.os }}-act-dr6-v1.1
+          path: act_dr6_lenslike/data/v1.2
+          key: ${{ runner.os }}-act-dr6-v1.2
 
       - name: Download ACT DR6 Lensing Data
         if: steps.cache-act.outputs.cache-hit != 'true'

@@ -34,7 +34,7 @@ This can be performed automatically with the supplied `get-act-data.sh` script. 
 
 Download the likelihood data tarball for ACT DR6 lensing from [NASA's LAMBDA archive](https://lambda.gsfc.nasa.gov/product/act/actadv_prod_table.html).
 
-Extract the tarball into the `act_dr6_lenslike/data/` directory in the cloned repository such the directory `v1.1` is directly inside it. Only then should you proceed with the next steps.
+Extract the tarball into the `act_dr6_lenslike/data/` directory in the cloned repository such the directory `v1.2` is directly inside it. Only then should you proceed with the next steps.
     
 ## Step 3: use in Python codes
 
