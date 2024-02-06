@@ -37,7 +37,7 @@ class ACTLikeTest(unittest.TestCase):
     def initialize(self):
         install({"likelihood": {"act_dr6_lenslike.ACTDR6LensLike": None}})
 
-    def generic_call(self,variant,lens_only,exp_chisq=None):
+    def generic_call(self,variant,lens_only,exp_chisq=None,places=1):
 
         info['likelihood'] = {'ACTDR6LensLike' : {'external' : ACTDR6LensLike,
                                                   'variant' : variant,
@@ -48,7 +48,7 @@ class ACTLikeTest(unittest.TestCase):
 
         chisq = -2 * loglikes[0]
 
-        self.assertAlmostEqual(chisq,  exp_chisq, 1)
+        self.assertAlmostEqual(chisq,  exp_chisq, places)
     
     def test_act_baseline_lensonly(self):
         self.generic_call('act_baseline',True,14.00)
@@ -66,7 +66,8 @@ class ACTLikeTest(unittest.TestCase):
         self.generic_call('act_extended',True,17.84)
     
     def test_act_extended(self):
-        self.generic_call('act_extended',False,17.94)
+        # This seems to have extra sensitivity to CAMB version
+        self.generic_call('act_extended',False,17.94,places=0)
     
     def test_actplanck_extended_lensonly(self):
         self.generic_call('actplanck_extended',True,24.52)
