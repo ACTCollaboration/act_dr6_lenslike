@@ -2,7 +2,7 @@
 
 # script from Joe Zuntz
 
-if [ -d act_dr6_lenslike/data/v1.1 ]
+if [ -d act_dr6_lenslike/data/v1.2 ]
 then
     echo ACT DR6 Lensing data already downloaded
 elif ! command -v wget &> /dev/null
@@ -11,8 +11,8 @@ then
 else
     mkdir -p act_dr6_lenslike/data
     pushd act_dr6_lenslike/data
-    wget https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/likelihood/data/ACT_dr6_likelihood_v1.1.tgz
-    tar -zxvf ACT_dr6_likelihood_v1.1.tgz
-    rm ACT_dr6_likelihood_v1.1.tgz
+    wget https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/likelihood/data/ACT_dr6_likelihood_v1.2.tgz
+    tar -zxvf ACT_dr6_likelihood_v1.2.tgz
+    rm ACT_dr6_likelihood_v1.2.tgz
     popd
 fi

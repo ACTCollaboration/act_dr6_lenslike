@@ -34,7 +34,7 @@ This can be performed automatically with the supplied `get-act-data.sh` script. 
 
 Download the likelihood data tarball for ACT DR6 lensing from [NASA's LAMBDA archive](https://lambda.gsfc.nasa.gov/product/act/actadv_prod_table.html).
 
-Extract the tarball into the `act_dr6_lenslike/data/` directory in the cloned repository such the directory `v1.1` is directly inside it. Only then should you proceed with the next steps.
+Extract the tarball into the `act_dr6_lenslike/data/` directory in the cloned repository such the directory `v1.2` is directly inside it. Only then should you proceed with the next steps.
     
 ## Step 3: use in Python codes
 
@@ -75,7 +75,10 @@ likelihood:
 ```
 
 No other parameters need to be set. (e.g. do not manually set `like_corrections` or `no_like_corrections` here).
-An example is provided in `ACTDR6LensLike-example.yaml`
+An example is provided in `ACTDR6LensLike-example.yaml`. If, however, you are combining with
+the ACT DR4 CMB 2-point power spectrum likelihood, you should also set `no_actlike_cmb_corrections: True`
+(in addition to `lens_only: True` as described below). You do not need to do this if you are combining
+with Planck CMB 2-point power spectrum likelihoods.
 
 ### Important parameters
 

@@ -6,8 +6,7 @@ try:
 except:
     InstallableLikelihood = object
 import os
-file_dir = os.path.abspath(os.path.dirname(__file__))
-data_dir = f"{file_dir}/data/v1.1/"
+default_version = "v1.2"
 
 variants =[x.strip() for x in  '''
 act_baseline,
@@ -51,7 +50,13 @@ def download(url, filename):
     return path
 
 def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/likelihood/data/",
-             data_filename="ACT_dr6_likelihood_v1.1.tgz"):
+             data_filename_root="ACT_dr6_likelihood",version=None):
+
+    if version is None:
+        version = default_version
+    data_filename = f"f{data_filename_root}_{version}.tgz"
+    file_dir = os.path.abspath(os.path.dirname(__file__))
+    data_dir = f"{file_dir}/data/{version}/"
 
     if os.path.exists(os.path.join(file_dir, data_dir)):
         print('Data already exists at {}, not downloading again.'.format(os.path.join(file_dir, data_dir)))
@@ -66,7 +71,7 @@ def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/
         download(data_url+data_filename, data_filename)
 
         tar = tarfile.open(data_filename)
-        tar.extractall(path=os.path.join(file_dir, data_dir).rstrip('v1.1/')) # this is not great
+        tar.extractall(path=os.path.join(file_dir, data_dir).rstrip(f'{version}/')) # this is not great
         tar.close()
 
         os.remove(data_filename)
@@ -75,22 +80,45 @@ def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/
 def pp_to_kk(clpp,ell):
     return clpp * (ell*(ell+1.))**2. / 4.
     
-def get_corrected_clkk(data_dict,clkk,cltt,clte,clee,clbb,suff=''):
+def get_corrected_clkk(data_dict,clkk,cltt,clte,clee,clbb,suff='',
+                       do_norm_corr=True, do_N1kk_corr=True, do_N1cmb_corr=True,
+                       act_calib=False, no_like_cmb_corrections=False):
+    if no_like_cmb_corrections:
+        do_norm_corr = False
+        do_N1cmb_corr = False
     clkk_fid = data_dict['fiducial_cl_kk']
     cl_dict = {'tt':cltt,'te':clte,'ee':clee,'bb':clbb}
-    N1_kk_corr = data_dict[f'dN1_kk{suff}'] @ (clkk-clkk_fid)
+    if do_N1kk_corr:
+        N1_kk_corr = data_dict[f'dN1_kk{suff}'] @ (clkk-clkk_fid)
+    else:
+        N1_kk_corr = 0
     dNorm = data_dict[f'dAL_dC{suff}']
     fid_norm = data_dict[f'fAL{suff}']
     N1_cmb_corr = 0.
     norm_corr = 0.
+    
+    if act_calib and not('planck' in suff):
+        ocl = cl_dict['tt']
+        fcl = data_dict[f'fiducial_cl_tt']
+        ols = np.arange(ocl.size)
+        cal_ell_min = 1000
+        cal_ell_max = 2000
+        sel = np.s_[np.logical_and(ols>cal_ell_min,ols<cal_ell_max)]
+        cal_fact = (ocl[sel]/fcl[sel]).mean()
+    else:
+        cal_fact = 1.0
+
     for i,s in enumerate(['tt','ee','bb','te']):
-        cldiff = (cl_dict[s]-data_dict[f'fiducial_cl_{s}'])
-        N1_cmb_corr = N1_cmb_corr + (data_dict[f'dN1_{s}{suff}']@cldiff)
-        c = - 2. * (dNorm[i] @ cldiff)
-        if i==0:
-            ls = np.arange(c.size)
-        c[ls>=2] = c[ls>=2] / fid_norm[ls>=2]
-        norm_corr = norm_corr + c
+        icl = cl_dict[s]
+        cldiff = ((icl/cal_fact)-data_dict[f'fiducial_cl_{s}'])
+        if do_N1cmb_corr:
+            N1_cmb_corr = N1_cmb_corr + (data_dict[f'dN1_{s}{suff}']@cldiff)
+        if do_norm_corr:
+            c = - 2. * (dNorm[i] @ cldiff)
+            if i==0:
+                ls = np.arange(c.size)
+            c[ls>=2] = c[ls>=2] / fid_norm[ls>=2]
+            norm_corr = norm_corr + c
     nclkk = clkk + norm_corr*clkk_fid + N1_kk_corr + N1_cmb_corr
     return nclkk
 
@@ -200,10 +228,11 @@ so for example,
 chi_square = -2 lnlike
 """
 
-def load_data(variant, ddir=data_dir,
+def load_data(variant, ddir=None,
               lens_only=False,
               apply_hartlap=True,like_corrections=True,mock=False,
-              nsims_act=796,nsims_planck=400,trim_lmax=2998,scale_cov=None):
+              nsims_act=796,nsims_planck=400,trim_lmax=2998,scale_cov=None,
+              version=None, act_cmb_rescale=False, act_calib=False):
     """
     Given a data directory path, this function loads into a dictionary
     the data products necessary for evaluating the DR6 lensing likelihood.
@@ -222,6 +251,12 @@ def load_data(variant, ddir=data_dir,
     
     """
     # TODO: review defaults
+    if version is None:
+        version = default_version
+
+    if ddir is None:
+        file_dir = os.path.abspath(os.path.dirname(__file__))
+        ddir = f"{file_dir}/data/{version}/"
 
     if not os.path.exists(ddir):
         raise FileNotFoundError("Requested data directory {} does not exist.\
@@ -230,7 +265,9 @@ def load_data(variant, ddir=data_dir,
                                 with the act_dr6_lenslike.get_data() function.".format(ddir))
 
 
+    print(f"Loading ACT DR6 lensing likelihood {version}...")
     v,baseline,include_planck = parse_variant(variant)
+    if include_planck and act_cmb_rescale: raise ValueError
     
 
     # output data
@@ -281,6 +318,7 @@ def load_data(variant, ddir=data_dir,
     data_act = y[start:end].copy()
     d['data_binned_clkk'] = data_act
     nbins_act = data_act.size
+        
 
     binmat = np.loadtxt(f'{ddir}/binning_matrix_act.txt')
     d['full_binmat_act'] = binmat.copy()
@@ -290,7 +328,22 @@ def load_data(variant, ddir=data_dir,
     d['binmat_act'] = standardize(ls,binmat[start:end,:],trim_lmax,extra_dims="xy")
     d['bcents_act'] = bcents[start:end].copy()
 
+    if act_cmb_rescale:
+        # load A_L_fid / A_L_ACT and standardize it
+        r = np.loadtxt("ratio_fid_over_act_wmap.txt")
+        rls = np.arange(r.size)
+        r[rls<2] = 0
+        rs = standardize(rls,r,trim_lmax)
+        # bin it
+        rb = d['binmat_act'] @ rs
+        # correct data
+        print("Binned ACT rescaling corrections: ", rb)
+        d['data_binned_clkk'] = d['data_binned_clkk'] / rb**2
+        
+
     if lens_only:
+        if act_cmb_rescale: raise ValueError
+        if act_calib: raise ValueError
         if include_planck:
             if v not in [None,'cinpaint']: raise ValueError(f"Combination of {v} with Planck is not available")
             fcov = np.loadtxt(f'{ddir}/covmat_actplanck_cmbmarg.txt')
@@ -360,8 +413,7 @@ def load_data(variant, ddir=data_dir,
     nsims = min(nsims_act,nsims_planck) if include_planck else nsims_act
     hartlap_correction = (nsims-nbins-2.)/(nsims-1.)
     if apply_hartlap:
-        pass
-        #warnings.warn("Hartlap correction to cinv: ", hartlap_correction)
+        warnings.warn(f"Hartlap correction to cinv: {hartlap_correction}")
     else:
         warnings.warn(f"Disabled Hartlap correction to cinv: {hartlap_correction}")
         hartlap_correction = 1.0
@@ -381,7 +433,8 @@ def load_data(variant, ddir=data_dir,
     return d
     
 
-def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_lmax=2998,return_theory=False):
+def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_lmax=2998,
+                   return_theory=False,do_norm_corr=True,act_calib=False,no_actlike_cmb_corrections=False):
 
     cl_kk = standardize(ell_kk,cl_kk,trim_lmax)
     cl_tt = standardize(ell_cmb,cl_tt,trim_lmax)
@@ -391,7 +444,9 @@ def generic_lnlike(data_dict,ell_kk,cl_kk,ell_cmb,cl_tt,cl_ee,cl_te,cl_bb,trim_l
     
     d = data_dict
     cinv = d['cinv']
-    clkk_act = get_corrected_clkk(data_dict,cl_kk,cl_tt,cl_te,cl_ee,cl_bb) if d['likelihood_corrections'] else cl_kk
+    clkk_act = get_corrected_clkk(data_dict,cl_kk,cl_tt,cl_te,cl_ee,cl_bb,
+                                  do_norm_corr=do_norm_corr,act_calib=act_calib,
+                                  no_like_cmb_corrections=no_actlike_cmb_corrections) if d['likelihood_corrections'] else cl_kk
     bclkk = d['binmat_act'] @ clkk_act
     if d['include_planck']:
         clkk_planck = get_corrected_clkk(data_dict,cl_kk,cl_tt,cl_te,cl_ee,cl_bb,'_planck') if d['likelihood_corrections'] else cl_kk
@@ -416,6 +471,7 @@ class ACTDR6LensLike(InstallableLikelihood):
     nsims_act = 792. # Number of sims used for covmat; used in Hartlap correction
     nsims_planck = 400. # Number of sims used for covmat; used in Hartlap correction
     no_like_corrections = False
+    no_actlike_cmb_corrections = False
     lens_only = False
     # Any ells above this will be discarded; likelihood must at least request ells up to this
     trim_lmax = 2998
@@ -428,6 +484,9 @@ class ACTDR6LensLike(InstallableLikelihood):
     zmax = None
     scale_cov = None
     varying_cmb_alens = False # Whether to divide the theory spectrum by Alens
+    version = None
+    act_cmb_rescale = False
+    act_calib = False
 
     def initialize(self):
         if self.lens_only: self.no_like_corrections = True
@@ -435,7 +494,8 @@ class ACTDR6LensLike(InstallableLikelihood):
         self.data = load_data(variant=self.variant,lens_only=self.lens_only,
                               like_corrections=not(self.no_like_corrections),apply_hartlap=self.apply_hartlap,
                               mock=self.mock,nsims_act=self.nsims_act,nsims_planck=self.nsims_planck,
-                              trim_lmax=self.trim_lmax,scale_cov=self.scale_cov)
+                              trim_lmax=self.trim_lmax,scale_cov=self.scale_cov,version=self.version,
+                              act_cmb_rescale=self.act_cmb_rescale,act_calib=self.act_calib)
         
         if self.no_like_corrections:
             self.requested_cls = ["pp"]
@@ -474,7 +534,9 @@ class ACTDR6LensLike(InstallableLikelihood):
         else:
             cl_kk = pp_to_kk(clpp,ell)
         
-        logp = generic_lnlike(self.data,ell,cl_kk,ell,cl['tt'],cl['ee'],cl['te'],cl['bb'],self.trim_lmax)
+        logp = generic_lnlike(self.data,ell,cl_kk,ell,cl['tt'],cl['ee'],cl['te'],cl['bb'],self.trim_lmax,
+                              do_norm_corr=not(self.act_cmb_rescale),act_calib=self.act_calib,
+                              no_actlike_cmb_corrections=self.no_actlike_cmb_corrections)
         self.log.debug(
             f"ACT-DR6-lensing-like lnLike value = {logp} (chisquare = {-2 * logp})")
         return logp
