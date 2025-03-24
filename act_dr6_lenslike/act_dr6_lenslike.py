@@ -54,7 +54,7 @@ def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/
 
     if version is None:
         version = default_version
-    data_filename = f"f{data_filename_root}_{version}.tgz"
+    data_filename = f"{data_filename_root}_{version}.tgz"
     file_dir = os.path.abspath(os.path.dirname(__file__))
     data_dir = f"{file_dir}/data/{version}/"
 
