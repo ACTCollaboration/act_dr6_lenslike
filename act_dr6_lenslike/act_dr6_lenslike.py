@@ -64,7 +64,7 @@ def get_data(data_url="https://lambda.gsfc.nasa.gov/data/suborbital/ACT/ACT_dr6/
         import tarfile
 
         orig_cwd = os.getcwd()
-        os.mkdir(os.path.join(file_dir, data_dir))
+        os.makedirs(os.path.join(file_dir, data_dir), exist_ok=True)
         os.chdir(os.path.join(file_dir, data_dir))
 
         print('Downloading data {} and placing it in likelihood folder.'.format(data_filename))
