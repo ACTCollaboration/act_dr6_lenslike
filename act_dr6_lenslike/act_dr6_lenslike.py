@@ -503,7 +503,7 @@ class ACTDR6LensLike(InstallableLikelihood):
         if self.lens_only: self.no_like_corrections = True
         if self.lmax < self.trim_lmax: raise ValueError(f"An lmax of at least {self.trim_lmax} is required.")
         if self.packages_path:
-            ddir = self.get_path(self.packages_path)
+            ddir = os.path.join(self.get_path(self.packages_path), default_version)
         else:
             ddir = None
         self.data = load_data(ddir=ddir,
