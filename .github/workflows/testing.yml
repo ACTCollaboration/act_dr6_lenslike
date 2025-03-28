@@ -56,7 +56,7 @@ jobs:
           conda install gfortran
           pip install cobaya
           export COBAYA_PACKAGES_PATH="../packages"
-          cobaya-install camb act_dr6_lenslike
+          cobaya-install camb
 
       - name: Run Cobaya Likelihood Tests
         shell: bash -l {0}
