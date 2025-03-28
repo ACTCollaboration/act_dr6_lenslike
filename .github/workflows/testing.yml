@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
       
       - name: Install Conda w/ Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: test
           python-version: ${{ matrix.python-version }}
@@ -57,6 +57,8 @@ jobs:
           pip install cobaya
           export COBAYA_PACKAGES_PATH="../packages"
           cobaya-install camb
+          pip install -e .
+          cobaya-install act_dr6_lenslike.ACTDR6LensLike
 
       - name: Run Cobaya Likelihood Tests
         shell: bash -l {0}
