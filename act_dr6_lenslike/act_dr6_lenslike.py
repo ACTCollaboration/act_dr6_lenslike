@@ -519,8 +519,8 @@ class ACTDR6LensLike(InstallableLikelihood):
             self.requested_cls = ["tt", "te", "ee", "bb", "pp"]
 
     def get_requirements(self):
-        if self.no_like_corrections:
-            ret = {'Cl': {'tt': self.lmax, 'te': self.lmax, 'ee': self.lmax, 'pp': self.lmax}}
+        if not(self.no_like_corrections):
+            ret = {'Cl': {'tt': self.lmax, 'te': self.lmax, 'ee': self.lmax, 'bb': self.lmax, 'pp': self.lmax}}
         else:
             ret = {'Cl': {'pp': self.lmax}}
 
