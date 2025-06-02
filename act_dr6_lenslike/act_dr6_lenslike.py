@@ -241,7 +241,7 @@ chi_square = -2 lnlike
 def load_data(variant, ddir=None,
               lens_only=False,
               apply_hartlap=True, like_corrections=True, mock=False,
-              nsims_act=796, nsims_planck=400, trim_lmax=2998, scale_cov=None,
+              nsims_act=792, nsims_planck=400, trim_lmax=2998, scale_cov=None,
               version=None, act_cmb_rescale=False, act_calib=False):
     """
     Given a data directory path, this function loads into a dictionary
