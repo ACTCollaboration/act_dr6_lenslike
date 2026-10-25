@@ -101,3 +101,10 @@ For CAMB calls, we recommend the following (or higher accuracy):
 - `lSampleBoost`:1
 - `lAccuracyBoost`:1
 - `halofit_version`:`mead2016`
+
+#### CAMB version
+
+The DR6 lensing chains were run with CAMB 1.3.6. CAMB 2.x no longer accepts `lens_margin`, so with it the settings above (and `ACTDR6LensLike-example.yaml` and `act_dr6_lenslike/tests/test_cobaya.py`) fail with `CAMBUnknownArgumentError: Unrecognized parameter: lens_margin`. To use them as written, install CAMB 1.3.6. Its build imports `pkg_resources`, so it needs an older setuptools:
+
+    pip install "setuptools<70" wheel
+    pip install --no-build-isolation camb==1.3.6
